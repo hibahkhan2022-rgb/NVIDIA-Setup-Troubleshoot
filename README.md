@@ -12,12 +12,11 @@ Materials required for basic setup:
 
 # Setup 
 How to access Docker Container:
-`
+```
 sudo docker run --rm -it --runtime nvidia --network host \
   --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
   -v /home/jetson/jetson-playground/jetson-bench:/workspace \
   -w /workspace \
   nvcr.io/nvidia/pytorch:24.11-py3-igpu
 
-
-`
+```
