@@ -39,10 +39,10 @@ import torchvision.models as models
 torch.set_num_threads(1)
 
 WARMUP = 10
-ITERS = 200
-RUNS = 10        # how many times to repeat each device
+ITERS = 500
+RUNS = 5        # how many times to repeat each device
 BATCH = 5
-H, W = 480, 480
+H, W = 224,224
 
 def bench(device: str):
     model = models.resnet18(weights=None).eval().to(device)
@@ -67,8 +67,8 @@ def bench(device: str):
 
     p50 = statistics.median(times)
     p95 = statistics.quantiles(times, n=20)[18]
-    P99 = statistics.quantiles(times, n=100)[98]
-    fps = 1000.0 / (sum(times) / len(times))
+    p99 = statistics.quantiles(times, n=100)[98]
+    fps = 1000.0 / (sum(times) / len(times)) * BATCH
     return p50, p95, p99, fps
 
 def main():
