@@ -13,10 +13,10 @@ Materials required for basic setup:
 # Setup 
 
 ## Access the project directory
-'''
+```
 cd jetson-playground/jetson-bench
 ls
-'''
+```
 You should see something callsed bench_torchvision.py
 
 ## How to access Docker Container:
@@ -27,6 +27,6 @@ sudo docker run --rm -it --runtime nvidia --network=host \
   bash
 ```
 Then, cd into the workspace. Should also see bench_torchvision.py. Every time you want to run the benchmark, write out:
-'''
+```
 python3 bench_torchvision.py
-'''
+```
