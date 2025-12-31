@@ -11,12 +11,22 @@ Materials required for basic setup:
 7. MicoSD card + reader
 
 # Setup 
-How to access Docker Container:
-```
-sudo docker run --rm -it --runtime nvidia --network host \
-  --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
-  -v /home/jetson/jetson-playground/jetson-bench:/workspace \
-  -w /workspace \
-  nvcr.io/nvidia/pytorch:24.11-py3-igpu
 
+## Access the project directory
+'''
+cd jetson-playground/jetson-bench
+ls
+'''
+You should see something callsed bench_torchvision.py
+
+## How to access Docker Container:
 ```
+sudo docker run --rm -it --runtime nvidia --network=host \
+  -v "$PWD":/workspace \
+  dustynv/l4t-pytorch:r36.4.0 \
+  bash
+```
+Then, cd into the workspace. Should also see bench_torchvision.py. Every time you want to run the benchmark, write out:
+'''
+python3 bench_torchvision.py
+'''
