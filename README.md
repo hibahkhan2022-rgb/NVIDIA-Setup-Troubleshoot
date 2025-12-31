@@ -30,3 +30,70 @@ Then, cd into the workspace. Should also see bench_torchvision.py. Every time yo
 ```
 python3 bench_torchvision.py
 ```
+## Example Script
+```
+import time, statistics
+import torch
+import torchvision.models as models
+
+torch.set_num_threads(1)
+
+WARMUP = 10
+ITERS = 50
+RUNS = 3        # how many times to repeat each device
+BATCH = 1
+H, W = 224, 224
+
+def bench(device: str):
+    model = models.resnet18(weights=None).eval().to(device)
+    x = torch.randn(BATCH, 3, H, W, device=device)
+
+    # warmup
+    for _ in range(WARMUP):
+        with torch.no_grad():
+            _ = model(x)
+    if device == "cuda":
+        torch.cuda.synchronize()
+
+    times = []
+    for _ in range(ITERS):
+        t0 = time.perf_counter()
+        with torch.no_grad():
+            _ = model(x)
+        if device == "cuda":
+            torch.cuda.synchronize()
+        t1 = time.perf_counter()
+        times.append((t1 - t0) * 1000)
+
+    p50 = statistics.median(times)
+    p95 = statistics.quantiles(times, n=20)[18]
+    fps = 1000.0 / (sum(times) / len(times))
+    return p50, p95, fps
+
+def main():
+    print("torch:", torch.__version__)
+    print("cuda available:", torch.cuda.is_available())
+    print()
+
+    for dev in ["cpu", "cuda"]:
+        if dev == "cuda" and not torch.cuda.is_available():
+            continue
+
+        results = []
+        print(f"=== {dev.upper()} ===")
+
+        for r in range(RUNS):
+            p50, p95, fps = bench(dev)
+            results.append((p50, p95, fps))
+            print(f"run {r+1}: p50={p50:.2f}ms | p95={p95:.2f}ms | FPS={fps:.2f}")
+
+        avg_p50 = sum(x[0] for x in results) / RUNS
+        avg_p95 = sum(x[1] for x in results) / RUNS
+        avg_fps = sum(x[2] for x in results) / RUNS
+
+        print(f"AVG {dev.upper()}: p50={avg_p50:.2f}ms | p95={avg_p95:.2f}ms | FPS={avg_fps:.2f}")
+        print()
+
+if __name__ == "__main__":
+    main()
+```
