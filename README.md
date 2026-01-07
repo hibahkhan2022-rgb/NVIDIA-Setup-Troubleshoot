@@ -30,6 +30,10 @@ Then, cd into the workspace. Should also see bench_torchvision.py. Every time yo
 ```
 python3 bench_torchvision.py
 ```
+To edit a file completely, try:
+```
+cat << 'EOF' > mobilenet_bench.py
+```
 ## Example Script
 ```
 import time, statistics
